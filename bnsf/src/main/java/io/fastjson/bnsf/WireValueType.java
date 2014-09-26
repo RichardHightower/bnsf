@@ -3,7 +3,7 @@ package io.fastjson.bnsf;
 /**
  * Created by Richard on 9/25/14.
  */
-public enum Type {
+public enum WireValueType {
 
     /* Concepts. */
     ROOT(null, -1, -1, true),
@@ -126,22 +126,83 @@ public enum Type {
     STREAM_OF_MIME(STREAM,  35, -90, MIME),
 
 
-    LAST(null, -1, -1, true)
+    LAST(null, -1, -1, true),
     ;
 
+    private final WireValueType parent;
+    private final byte enumValue;
+    private final byte wireValue;
+    private final WireValueType componentType;
+    private final boolean concept;
 
-    Type(Type parent, int enumValue, int wireValue, Type composes) {
 
+    WireValueType(WireValueType parent, int enumValue, int wireValue, WireValueType composes) {
+
+        this.parent = parent;
+        this.enumValue = (byte) enumValue;
+        this.wireValue = (byte) wireValue;
+        this.componentType = composes;
+
+        concept=false;
+    }
+
+
+    WireValueType(WireValueType parent, int enumValue, int wireValue, boolean concept) {
+
+
+        this.parent = parent;
+        this.enumValue = (byte) enumValue;
+        this.wireValue = (byte) wireValue;
+        this.componentType = null;
+        this.concept = concept;
 
     }
 
 
-    Type(Type parent, int enumValue, int wireValue, boolean concept) {
+    WireValueType(WireValueType parent, int enumValue, int wireValue) {
+
+        this.parent = parent;
+        this.enumValue = (byte) enumValue;
+        this.wireValue = (byte) wireValue;
+        this.componentType = null;
+        concept=false;
 
     }
 
+    public boolean isArray() {
+        return ARRAY == this.parent;
+    }
 
-    Type(Type parent, int enumValue, int wireValue) {
 
+    public boolean isStream() {
+        return STREAM == this.parent;
+    }
+
+
+    public boolean isNumeric() {
+        return NUMERIC == this.parent;
+    }
+
+
+    public boolean isConcept() {
+        return concept;
+    }
+
+
+    public boolean isValue() {
+        return !concept;
+    }
+
+
+    public WireValueType componentType() {
+        return this.componentType;
+    }
+
+    public byte enumValue() {
+        return enumValue;
+    }
+
+    public byte wireValue() {
+        return wireValue;
     }
 }
